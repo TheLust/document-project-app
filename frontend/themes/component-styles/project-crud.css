@@ -1,0 +1,30 @@
+@import "@vaadin/vaadin-lumo-styles/auto-complete.css";
+
+vaadin-accordion {
+    margin-top: 32px;
+}
+
+
+ul {
+    margin: 0;
+    list-style: none;
+    padding-inline-start: 32px;
+}
+
+li {
+    font-weight: 500;
+    color: var(--lumo-secondary-text-color);
+    cursor: var(--lumo-clickable-cursor);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    white-space: nowrap;
+}
+
+li:hover {
+    color: var(--lumo-contrast-80pct);
+}
+
+.year-accordion {
+    margin-left: 16px;
+}

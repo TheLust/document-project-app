@@ -1,0 +1,13 @@
+@import "@vaadin/vaadin-lumo-styles/auto-complete.css";
+
+h1 {
+    font-size: var(--lumo-font-size-l);
+    margin: 0;
+}
+
+vaadin-icon {
+    box-sizing: border-box;
+    margin-inline-end: var(--lumo-space-m);
+    margin-inline-start: var(--lumo-space-xs);
+    padding: var(--lumo-space-xs);
+}
