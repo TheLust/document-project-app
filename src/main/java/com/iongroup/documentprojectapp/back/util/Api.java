@@ -38,17 +38,8 @@ public class Api {
     }
 
     public static String getDefaultPage(String token) {
-        String role = getHighestRole(token);
 
-        if (role.equals("Amministratore")) {
-            return "/admin";
-        }
-
-        if (role.equals("Operatore Cedacri")) {
-            return "/operator/cedacri";
-        }
-
-        return  "/operator/bank";
+        return "/personal";
     }
 
     public static HttpEntity<String> setHeader() {

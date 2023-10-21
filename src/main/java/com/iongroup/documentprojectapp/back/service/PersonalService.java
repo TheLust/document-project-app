@@ -2,6 +2,7 @@ package com.iongroup.documentprojectapp.back.service;
 
 import com.iongroup.documentprojectapp.back.dto.ExceptionResponse;
 import com.iongroup.documentprojectapp.back.dto.PasswordChangeRequest;
+import com.iongroup.documentprojectapp.back.dto.RegisterRequest;
 import com.iongroup.documentprojectapp.back.dto.UserDto;
 import com.iongroup.documentprojectapp.back.exception.BadRequestException;
 import com.iongroup.documentprojectapp.back.util.Api;
@@ -13,57 +14,36 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
-public class UserService {
+public class PersonalService {
 
     private final RestTemplate restTemplate;
     private final String token;
 
-    public UserService(RestTemplate restTemplate, String token) {
+    public PersonalService(RestTemplate restTemplate, String token) {
         this.restTemplate = restTemplate;
         this.token = token;
     }
 
     @SneakyThrows
-    public List<UserDto> getAll() {
+    public UserDto find() {
         try {
-            return Arrays.stream(Objects.requireNonNull(restTemplate.exchange(Api.URL + "users",
+            return restTemplate.exchange(Api.URL + "personal",
                                     HttpMethod.GET,
                                     Api.setHeader(token),
-                                    UserDto[].class)
-                            .getBody()))
-                    .toList();
+                                    UserDto.class).getBody();
         } catch (HttpClientErrorException e) {
             throw new BadRequestException(Objects.requireNonNull(e.getResponseBodyAs(ExceptionResponse.class)).getMessage());
         } catch (ResourceAccessException e) {
             UI.getCurrent().navigate(ErrorView.class);
-            return new ArrayList<>();
-        }
-    }
-
-    @SneakyThrows
-    public UserDto save(UserDto registerRequest) {
-
-        String url = Api.URL + "users" + "?institution=2";
-
-        try {
-            return restTemplate.exchange(url,
-                            HttpMethod.POST,
-                            Api.setHeader(registerRequest, token),
-                            UserDto.class)
-                    .getBody();
-        } catch (HttpClientErrorException e) {
-            throw new BadRequestException(Objects.requireNonNull(e.getResponseBodyAs(ExceptionResponse.class)).getMessage());
+            return new UserDto();
         }
     }
 
     @SneakyThrows
     public UserDto update(UserDto userDto) {
-        String url = Api.URL + "users?institution=2&id=" + userDto.getId();
+        String url = Api.URL + "personal";
 
         try {
             return restTemplate.exchange(url,
@@ -76,12 +56,14 @@ public class UserService {
         }
     }
 
-    public void delete(UserDto userDto) {
+    @SneakyThrows
+    public UserDto save(RegisterRequest registerRequest) {
         try {
-            restTemplate.exchange(Api.URL + "users?id=" + userDto.getId(),
-                            HttpMethod.DELETE,
-                            Api.setHeader(userDto, token),
-                            UserDto.class);
+            return restTemplate.exchange(Api.URL + "users?institution=" + registerRequest.getInstitution().getId(),
+                            HttpMethod.POST,
+                            Api.setHeader(registerRequest, token),
+                            UserDto.class)
+                    .getBody();
         } catch (HttpClientErrorException e) {
             throw new BadRequestException(Objects.requireNonNull(e.getResponseBodyAs(ExceptionResponse.class)).getMessage());
         }

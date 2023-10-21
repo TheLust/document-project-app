@@ -2,10 +2,9 @@ package com.iongroup.documentprojectapp.front.layout;
 
 import com.iongroup.documentprojectapp.back.util.Api;
 import com.iongroup.documentprojectapp.back.util.CookiesManager;
-import com.iongroup.documentprojectapp.front.view.AdminView;
-import com.iongroup.documentprojectapp.front.view.BankOperatorView;
-import com.iongroup.documentprojectapp.front.view.CedacriOperatorView;
+import com.iongroup.documentprojectapp.front.view.BigDataAdminView;
 import com.iongroup.documentprojectapp.front.view.LoginView;
+import com.iongroup.documentprojectapp.front.view.PersonalView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -58,16 +57,10 @@ public class MainLayout extends AppLayout {
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
 
         if (roles.contains("Amministratore")) {
-            tabs.add(createTab(VaadinIcon.USER_STAR, "Amministratore", AdminView.class));
+            tabs.add(createTab(VaadinIcon.USER_STAR, "Admin", BigDataAdminView.class));
         }
 
-        if (roles.contains("Operatore Cedacri")) {
-            tabs.add(createTab(VaadinIcon.USER, "Operatore Cedacri", CedacriOperatorView.class));
-        }
-
-        if (roles.contains("Operatore Bancare")) {
-            tabs.add(createTab(VaadinIcon.USERS, "Operatore Bancare", BankOperatorView.class));
-        }
+        tabs.add(createTab(VaadinIcon.USER, "My Account", PersonalView.class));
 
         return tabs;
     }

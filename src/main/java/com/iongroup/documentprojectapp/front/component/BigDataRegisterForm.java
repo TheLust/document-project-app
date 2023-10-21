@@ -1,13 +1,8 @@
 package com.iongroup.documentprojectapp.front.component;
 
-import com.iongroup.documentprojectapp.back.dto.InstitutionDto;
 import com.iongroup.documentprojectapp.back.dto.RegisterRequest;
-import com.iongroup.documentprojectapp.back.dto.RoleDto;
 import com.iongroup.documentprojectapp.back.exception.BadRequestException;
-import com.iongroup.documentprojectapp.back.service.InstitutionService;
-import com.iongroup.documentprojectapp.back.service.RoleService;
-import com.iongroup.documentprojectapp.back.service.UserService;
-import com.iongroup.documentprojectapp.back.util.Entity;
+import com.iongroup.documentprojectapp.back.service.AuthService;
 import com.iongroup.documentprojectapp.back.util.Field;
 import com.iongroup.documentprojectapp.front.util.Constants;
 import com.iongroup.documentprojectapp.front.util.ErrorMessage;
@@ -16,10 +11,10 @@ import com.iongroup.documentprojectapp.front.view.ErrorView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.AnchorTargetValue;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -27,9 +22,9 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 
-public class UserAddForm extends Dialog {
+public class BigDataRegisterForm extends Dialog {
 
-    private final UserService userService;
+    private final AuthService authService;
 
     protected final TextField username = new TextField(Field.USERNAME);
     protected final PasswordField password = new PasswordField(Field.PASSWORD);
@@ -38,32 +33,12 @@ public class UserAddForm extends Dialog {
     protected final TextField name = new TextField(Field.NAME);
     protected final TextField surname = new TextField(Field.SURNAME);
     protected final TextField patronymic = new TextField(Field.PATRONYMIC);
-    protected final MultiSelectComboBox<RoleDto> roles;
-    protected final ComboBox<InstitutionDto> institution;
     protected final Checkbox isEnabled = new Checkbox(Field.ENABLED);
+    protected final Checkbox accept = new Checkbox("");
     private final BeanValidationBinder<RegisterRequest> binder = new BeanValidationBinder<>(RegisterRequest.class);
 
-    public UserAddForm(RegisterRequest registerRequest, UserService userService, InstitutionService institutionService, RoleService roleService) {
-        this.userService = userService;
-
-        institution = new ComboBox<>(Entity.INSTITUTION, institutionService.getAll());
-        institution.setItemLabelGenerator(InstitutionDto::getName);
-        institution.setEnabled(false);
-
-        roles = new MultiSelectComboBox<>(Field.ROLES, roleService.getAll());
-        roles.setItemLabelGenerator(RoleDto::getName);
-        roles.addValueChangeListener(multiSelectComboBoxSetComponentValueChangeEvent -> {
-            if (multiSelectComboBoxSetComponentValueChangeEvent.getValue()
-                    .stream()
-                    .map(RoleDto::getName)
-                    .toList()
-                    .contains("Operatore Bancare")) {
-                institution.setEnabled(true);
-            } else {
-                institution.clear();
-                institution.setEnabled(false);
-            }
-        });
+    public BigDataRegisterForm(RegisterRequest registerRequest, AuthService authService) {
+        this.authService = authService;
 
         binder.bindInstanceFields(this);
         binder.setBean(registerRequest);
@@ -80,11 +55,22 @@ public class UserAddForm extends Dialog {
         enabledLayout.setWidthFull();
         enabledLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 
+        Anchor anchor = new Anchor();
+        anchor.setText("Privacy Policy");
+        anchor.setHref("https://drive.google.com/file/d/1KuEoWj6bbQhzvE7lsqgrwz-jV2gPd-K-/view?usp=share_link");
+        anchor.setTarget(AnchorTargetValue.forString("_blank"));
+        accept.setLabel("");
+
+        HorizontalLayout acceptLayout = new HorizontalLayout(accept, anchor);
+        acceptLayout.setWidthFull();
+        acceptLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+
         Button save = new Button(Constants.SAVE, event -> save());
         Button cancel = new Button(Constants.CANCEL, event -> this.close());
         HorizontalLayout buttonLayout = new HorizontalLayout(save, cancel);
         buttonLayout.setWidthFull();
         buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+
 
         FormLayout formLayout = new FormLayout(
                 username,
@@ -94,9 +80,8 @@ public class UserAddForm extends Dialog {
                 name,
                 surname,
                 patronymic,
-                roles,
-                institution,
-                enabledLayout
+                enabledLayout,
+                acceptLayout
                 );
         add(formLayout, buttonLayout);
     }
@@ -110,8 +95,11 @@ public class UserAddForm extends Dialog {
                     throw new BadRequestException(ErrorMessage.PASSWORD_NOT_MATCH);
                 }
 
-//                userService.save(registerRequest);
-                UserCrud.refresh();
+                if (!accept.isEnabled()) {
+                    throw new BadRequestException("Please accept our privacy policy");
+                }
+
+                authService.register(registerRequest);
                 this.close();
             } else {
                 ErrorUtils.showError(ErrorMessage.VALIDATION_FAILED);

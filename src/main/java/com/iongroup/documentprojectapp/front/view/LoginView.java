@@ -1,11 +1,14 @@
 package com.iongroup.documentprojectapp.front.view;
 
+import com.iongroup.documentprojectapp.back.dto.RegisterRequest;
 import com.iongroup.documentprojectapp.back.exception.BadRequestException;
 import com.iongroup.documentprojectapp.back.dto.LoginRequest;
 import com.iongroup.documentprojectapp.back.service.AuthService;
 import com.iongroup.documentprojectapp.back.util.Api;
 import com.iongroup.documentprojectapp.back.util.CookiesManager;
+import com.iongroup.documentprojectapp.front.component.BigDataRegisterForm;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -59,7 +62,13 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             event.getSource().onEnabledStateChanged(true);
         });
 
-        add(login);
+        Button button = new Button("Register", event -> new BigDataRegisterForm(new RegisterRequest(), authService).open());
+
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setAlignItems(Alignment.CENTER);
+
+        verticalLayout.add(login, button);
+        add(verticalLayout);
     }
 
     @Override

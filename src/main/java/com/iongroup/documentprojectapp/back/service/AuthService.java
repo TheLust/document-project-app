@@ -1,8 +1,11 @@
 package com.iongroup.documentprojectapp.back.service;
 
-import com.iongroup.documentprojectapp.back.exception.BadRequestException;
 import com.iongroup.documentprojectapp.back.dto.ExceptionResponse;
 import com.iongroup.documentprojectapp.back.dto.LoginRequest;
+import com.iongroup.documentprojectapp.back.dto.RegisterRequest;
+import com.iongroup.documentprojectapp.back.dto.RoleDto;
+import com.iongroup.documentprojectapp.back.dto.UserDto;
+import com.iongroup.documentprojectapp.back.exception.BadRequestException;
 import com.iongroup.documentprojectapp.back.util.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
@@ -10,8 +13,10 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class AuthService {
@@ -26,6 +31,27 @@ public class AuthService {
                             Api.setHeader(loginRequest),
                             String.class)
                     .getBody();
+        } catch (HttpClientErrorException e) {
+            throw new BadRequestException(Objects.requireNonNull(e.getResponseBodyAs(ExceptionResponse.class)).getMessage());
+        }
+    }
+
+    public void register(RegisterRequest registerRequest) {
+
+        RoleDto roleDto = new RoleDto();
+        roleDto.setId(3L);
+
+        Set<RoleDto> roles = new HashSet<>();
+        roles.add(roleDto);
+
+        registerRequest.setRoles(roles);
+
+        try {
+            restTemplate.exchange(
+                            Api.AUTH + "register",
+                            HttpMethod.POST,
+                            Api.setHeader(registerRequest),
+                            UserDto.class);
         } catch (HttpClientErrorException e) {
             throw new BadRequestException(Objects.requireNonNull(e.getResponseBodyAs(ExceptionResponse.class)).getMessage());
         }

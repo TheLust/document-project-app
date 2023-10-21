@@ -22,6 +22,9 @@ public class UserDto {
 
     private Set<RoleDto> roles;
 
+    @NotBlank(message = Field.PASSWORD + ConstraintViolationMessage.NOT_BLANK)
+    private String password;
+
     @NotBlank(message = Field.USERNAME + ConstraintViolationMessage.NOT_BLANK)
     @Size(
             min = 1,
