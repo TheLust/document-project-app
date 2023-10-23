@@ -57,7 +57,7 @@ public class BigDataRegisterForm extends Dialog {
 
         Anchor anchor = new Anchor();
         anchor.setText("Privacy Policy");
-        anchor.setHref("https://drive.google.com/file/d/1KuEoWj6bbQhzvE7lsqgrwz-jV2gPd-K-/view?usp=share_link");
+        anchor.setHref("https://s.yimg.com/ny/api/res/1.2/3G214Kmm_v_0WS9in0RjFg--/YXBwaWQ9aGlnaGxhbmRlcjt3PTY0MDtoPTQyNg--/https://media.zenfs.com/en_us/News/digitaltrends.com/you-mad-bro-625x416.png");
         anchor.setTarget(AnchorTargetValue.forString("_blank"));
         accept.setLabel("");
 
