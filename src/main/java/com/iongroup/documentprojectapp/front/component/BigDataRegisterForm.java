@@ -43,7 +43,7 @@ public class BigDataRegisterForm extends Dialog {
         binder.bindInstanceFields(this);
         binder.setBean(registerRequest);
 
-        // Comment 2
+        // Comment 3
 
         username.setMaxLength(32);
         name.setMaxLength(255);
